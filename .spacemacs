@@ -36,7 +36,7 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     helm
+     (helm :variables helm-position 'bottom)
      auto-completion
      ;; better-defaults
      emacs-lisp
@@ -50,15 +50,16 @@ values."
      markdown
      (org :variables
           org-enable-org-journal-support t)
+     pdf
      (ranger :variables
              ranger-show-preview t)
      speed-reading
      templates
      ;;(templates :variables templates-private-directory "~/Dropbox/spacemacs/templates")
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
-     ;; spell-checking
+     (shell :variables
+             shell-default-width 50
+             shell-default-position 'right)
+     spell-checking
      syntax-checking
      ;; version-control
      )
@@ -321,10 +322,11 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  ;; Added by don 7th Octoboer 2018 - set F6 function key to org-capture
+  (global-set-key (kbd "<f6>") 'org-capture)
   ;; Added by don 24th September 2018 wrap lines visually at words
   (add-hook 'text-mode-hook #'visual-line-mode)
   (setq org-journal-dir "~/Dropbox/journal/")
-  ;; (setq default-directory "~/Dropbox/")
   (add-hook 'find-file-hook 'auto-insert)
   ;; this points agenda to the files to collect from
   ;; (add-to-list 'org-agenda-files (expand-file-name "~/org")) will apparently pull all files in a directory, not tested yet though
@@ -363,7 +365,8 @@ you should place your code here."
                            ("~/Dropbox/gtd/someday.org" :level . 1)
                            ("~/Dropbox/gtd/tickler.org" :maxlevel . 2)))
   (setq org-want-todo-bindings t)
-  (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+  ;;Line below has been commented out as using todo keywords on a per file basis.
+  ;;(setq org-todo-keywords '((sequence "TODO(t@/!)" "WAITING(w@/!)" "|" "DONE(d/!)" "CANCELLED(c@/!)")))
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -395,7 +398,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks spray yapfify web-mode tagedit slim-mode scss-mode sass-mode pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements live-py-mode less-css-mode hy-mode dash-functional helm-pydoc helm-css-scss haml-mode emmet-mode cython-mode anaconda-mode pythonic disaster cmake-mode clang-format smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+    (flyspell-correct-helm flyspell-correct spray yapfify web-mode tagedit slim-mode scss-mode sass-mode pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements live-py-mode less-css-mode hy-mode dash-functional helm-pydoc helm-css-scss haml-mode emmet-mode cython-mode anaconda-mode pythonic disaster cmake-mode clang-format smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
  '(paradox-automatically-star t)
  '(paradox-github-token "9b5aa5c40f930fe59bb18ed26655e2cd87da6843"))
 (custom-set-faces
