@@ -36,31 +36,27 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     (helm :variables helm-position 'bottom)
+     helm
      auto-completion
      ;; better-defaults
-     emacs-lisp
-     emoji
-     erc
      c-c++
+     emacs-lisp
+     ;; emoji
+     evil-commentary
      games
      git
+     google-calendar
      html
-     python
      markdown
      (org :variables
-          org-enable-org-journal-support t)
-     pdf
-     (ranger :variables
-             ranger-show-preview t)
-     speed-reading
-     templates
-     ;;(templates :variables templates-private-directory "~/Dropbox/spacemacs/templates")
+          org-enable-github-support t)
+     python
      (shell :variables
-             shell-default-width 50
-             shell-default-position 'right)
-     spell-checking
+             shell-default-position 'bottom
+             shell-default-height 35)
+     ;;spell-checking
      syntax-checking
+     themes-megapack
      ;; version-control
      )
    ;; List of additional packages that will be installed without being
@@ -139,17 +135,17 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-dark
+   dotspacemacs-themes '(purple-haze
                          spacemacs-light)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               ;; :size 13
+                               :size 18
                                :weight normal
                                :width normal
-                               :powerline-scale 1.2)
+                               :powerline-scale 1.1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
@@ -272,7 +268,7 @@ values."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers 'relative 
+   dotspacemacs-line-numbers 'relative
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -322,89 +318,60 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  ;; Added by don 7th Octoboer 2018 - set F6 function key to org-capture
+  ;; Added by don 13th Octoboer 2018 - set F6 function key to org-capture
   (global-set-key (kbd "<f6>") 'org-capture)
-  ;; Added by don 24th September 2018 wrap lines visually at words
+  ;; Added by don 13th September 2018 wrap lines visually at words
   (add-hook 'text-mode-hook #'visual-line-mode)
-  (setq org-journal-dir "~/Dropbox/journal/")
-  (add-hook 'find-file-hook 'auto-insert)
   ;; this points agenda to the files to collect from
-  ;; (add-to-list 'org-agenda-files (expand-file-name "~/org")) will apparently pull all files in a directory, not tested yet though
   (setq org-agenda-files '("~/Dropbox/gtd/inbox.org"
-                           "~/Dropbox/gtd/gtd.org"
-                           "~/Dropbox/gtd/tickler.org"))
+                           "~/Dropbox/gtd/project.org"
+                           "~/Dropbox/gtd/tickler.org"
+                           "~/Dropbox/gtd/doninthailand-calendar-sync.org"))
+  (setq org-refile-targets '(("~/Dropbox/gtd/project.org" :maxlevel . 1)
+                             ("~/Dropbox/gtd/next-action.org" :level . 1)
+                             ("~/Dropbox/gtd/someday.org" :level . 1)
+                             ("~/Dropbox/gtd/tickler.org" :maxlevel . 2)))
   )
-(setq org-agenda-custom-commands 
-      '(("h" "At home" tags-todo "@home"
-         ((org-agenda-overriding-header "Home")
-          (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
-
-(defun my-org-agenda-skip-all-siblings-but-first ()
-  "Skip all but the first non-done entry."
-  (let (should-skip-entry)
-    (unless (org-current-is-todo)
-      (setq should-skip-entry t))
-    (save-excursion
-      (while (and (not should-skip-entry) (org-goto-sibling t))
-        (when (org-current-is-todo)
-          (setq should-skip-entry t))))
-    (when should-skip-entry
-      (or (outline-next-heading)
-          (goto-char (point-max))))))
-
-(defun org-current-is-todo ()
-  (string= "TODO" (org-get-todo-state)))
-
-  (setq org-capture-templates '(("t" "Todo [inbox]" entry
-                               (file+headline "~/Dropbox/gtd/inbox.org" "Tasks")
-                               "* TODO %i%?")
-                              ("T" "Tickler" entry
-                               (file+headline "~/Dropbox/gtd/tickler.org" "Tickler")
-                               "* %i%? \n %U")))
-  (setq org-refile-targets '(("~/Dropbox/gtd/gtd.org" :maxlevel . 3)
-                           ("~/Dropbox/gtd/someday.org" :level . 1)
-                           ("~/Dropbox/gtd/tickler.org" :maxlevel . 2)))
-  (setq org-want-todo-bindings t)
-  ;;Line below has been commented out as using todo keywords on a per file basis.
-  ;;(setq org-todo-keywords '((sequence "TODO(t@/!)" "WAITING(w@/!)" "|" "DONE(d/!)" "CANCELLED(c@/!)")))
-
+;; Added by don 25th October 2018
+;; Settings for google-calendar package
+  (setq org-gcal-client-id "195451848882-bra3im29mslmb9g29u6p9k45c5bk5tmr.apps.googleusercontent.com"
+        org-gcal-client-secret "xWO8BrDkuuYaig1u80xHOywV")
+  (setq org-gcal-file-alist '(("doninthailand@gmail.com" . "~/Dropbox/gtd/doninthailand-calendar-sync.org")))
+;; Added by don 1st November 2018
+;; web-mode configuration
+(setq web-mode-enable-auto-quoting t)
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-capture-templates
+   (quote
+    (("b" "books to read" entry
+      (file+headline "~/Dropbox/gtd/someday.org" "books to read")
+      (file "~/Dropbox/gtd/templates/someday-books-template.txt")
+      :empty-lines-after 1)
+     ("t" "TODO" entry
+      (file+headline "~/Dropbox/gtd/inbox.org" "tasks")
+      (file "~/Dropbox/gtd/templates/inbox-todo-template.txt")
+      :empty-lines-after 1)
+     ("j" "JOURNAL" entry
+      (file+olp+datetree "~/Dropbox/gtd/journal.org")
+      (file "~/Dropbox/gtd/templates/journal-template.txt")
+      :empty-lines-after 1)
+     ("p" "PROJECT" entry
+      (file+headline "~/Dropbox/gtd/project.org" "projects")
+      (file "~/Dropbox/gtd/templates/projects-template.txt")
+      :empty-lines-after 1))))
  '(package-selected-packages
    (quote
-    (spray yapfify web-mode tagedit slim-mode scss-mode sass-mode pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements live-py-mode less-css-mode hy-mode dash-functional helm-pydoc helm-css-scss haml-mode emmet-mode cython-mode anaconda-mode pythonic disaster cmake-mode clang-format smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
- '(paradox-automatically-star t)
- '(paradox-github-token "9b5aa5c40f930fe59bb18ed26655e2cd87da6843"))
+    (org-gcal request-deferred deferred calfw ox-gfm evil-commentary zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme typit mmt sudoku pacmacs 2048-game yapfify xterm-color web-mode tagedit smeargle slim-mode shell-pop scss-mode sass-mode pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download multi-term mmm-mode markdown-toc markdown-mode magit-gitflow live-py-mode less-css-mode hy-mode dash-functional htmlize helm-pydoc helm-gitignore helm-css-scss helm-company helm-c-yasnippet haml-mode gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy graphql with-editor eshell-z eshell-prompt-extras esh-help emoji-cheat-sheet-plus emmet-mode disaster cython-mode company-web web-completion-data company-statistics company-emoji company-c-headers company-anaconda company cmake-mode clang-format auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu elisp-slime-nav dumb-jump diminish define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (flyspell-correct-helm flyspell-correct spray yapfify web-mode tagedit slim-mode scss-mode sass-mode pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements live-py-mode less-css-mode hy-mode dash-functional helm-pydoc helm-css-scss haml-mode emmet-mode cython-mode anaconda-mode pythonic disaster cmake-mode clang-format smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit ghub treepy let-alist graphql with-editor ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
- '(paradox-automatically-star t)
- '(paradox-github-token "9b5aa5c40f930fe59bb18ed26655e2cd87da6843"))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-)
+ '(default ((((class color) (min-colors 16777216)) (:foreground "#fff" :background "#120F14")) (((class color) (min-colors 88)) (:foreground "#fff" :background "#000")) (((class color) (min-colors 16)) (:foreground "#fff" :background "#000")) (((class color) (min-colors 8)) (:foreground "#fff" :background "#000")))))
